@@ -14,6 +14,7 @@ import { useStyles } from './sidebar.style';
 
 const TopicComponent = dynamic(() => import('../topic/topic.component'));
 const FriendComponent = dynamic(() => import('../friends/friend.component'));
+const NotificationComponent = dynamic(() => import('../notifications/notif.component'));
 
 export default function SidebarTabs() {
   const classes = useStyles();
@@ -44,7 +45,7 @@ export default function SidebarTabs() {
           <FriendComponent />
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <TopicComponent />
+          <NotificationComponent />
         </TabPanel>
       </SwipeableViews>
     </div>
