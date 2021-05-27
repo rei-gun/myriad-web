@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import Link from 'next/link';
+
 import Fab from '@material-ui/core/Fab';
 import Grow from '@material-ui/core/Grow';
 import Typography from '@material-ui/core/Typography';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 import { LoadingPage } from '../common/loading.component';
@@ -15,6 +18,7 @@ import PostComponent from 'src/components/timeline/post/post.component';
 import { usePost } from 'src/components/timeline/use-post.hook';
 import { Post } from 'src/interfaces/post';
 import { User, ExtendedUserPost } from 'src/interfaces/user';
+import theme from 'src/themes/default';
 
 type Props = {
   user: User;
@@ -56,6 +60,16 @@ export default function ProfileTimeline({ user, profile, loading }: Props) {
   return (
     <div className={style.root}>
       <div className={style.scroll}>
+        <div style={{ padding: theme.spacing(1, 0) }}>
+          <Typography variant="h4" style={{ marginBottom: 8, fontWeight: 500 }}>
+            <Link href="/home">
+              <a style={{ display: 'flex', alignItems: 'center' }}>
+                <ArrowBackIcon />
+                Home
+              </a>
+            </Link>
+          </Typography>
+        </div>
         {/* HEADER */}
         <Header user={user} profile={profile} loading={loading} isGuest={isGuest} />
 
