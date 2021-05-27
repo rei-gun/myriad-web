@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
@@ -65,6 +65,10 @@ const Notification = ({ user }: Props) => {
   // const [notif, setNotif] = useState(3);
   const { state } = useNotif();
   const { loadNotifications } = useNotifHook(user);
+
+  useEffect(() => {
+    loadNotifications();
+  }, []);
 
   return (
     <>
