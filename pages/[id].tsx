@@ -30,16 +30,15 @@ export default function Profile({ session, params }: Props) {
 
   useEffect(() => {
     getProfile();
-    getUserDetail();
   }, [params]);
+
+  useEffect(() => {
+    getUserDetail();
+  }, []);
 
   if (!session || !userState.user) return null;
 
-  return (
-    <Layout session={session}>
-      <ProfileTimeline user={userState.user} profile={profile} loading={loading} />
-    </Layout>
-  );
+  return <Layout session={session}>{userState && <ProfileTimeline user={userState.user} profile={profile} loading={loading} />}</Layout>;
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {

@@ -40,9 +40,11 @@ type PostActionProps = {
   detail: PostDetail;
   commentExpanded: boolean;
   expandComment: () => void;
+  likePost: () => void;
+  dislikePost: () => void;
 };
 
-export const PostActionComponent: React.FC<PostActionProps> = ({ post, detail, expandComment, commentExpanded }) => {
+export const PostActionComponent: React.FC<PostActionProps> = ({ post, detail, expandComment, commentExpanded, likePost, dislikePost }) => {
   const styles = useStyles();
 
   return (
@@ -54,11 +56,11 @@ export const PostActionComponent: React.FC<PostActionProps> = ({ post, detail, e
         <RedditReactionComponent metric={detail.metric} />
       </ShowIf>
 
-      <Button aria-label="like post" startIcon={<ThumbUpIcon />}>
-        (120)
+      <Button aria-label="like post" startIcon={<ThumbUpIcon />} onClick={likePost}>
+        ({post.publicMetric?.liked || 0})
       </Button>
-      <Button aria-label="dislike post" startIcon={<ThumbDownIcon />}>
-        (20)
+      <Button aria-label="dislike post" startIcon={<ThumbDownIcon />} onClick={dislikePost}>
+        ({post.publicMetric?.disliked || 0})
       </Button>
 
       <IconButton
@@ -71,7 +73,7 @@ export const PostActionComponent: React.FC<PostActionProps> = ({ post, detail, e
         <CommentIcon />
       </IconButton>
 
-      <Typography component="span">{post.comments.length} Comments</Typography>
+      <Typography component="span">{post.publicMetric?.comment || 0} Comments</Typography>
     </>
   );
 };
