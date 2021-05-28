@@ -1,17 +1,20 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useImperativeHandle } from 'react';
 
 import { useSession } from 'next-auth/client';
 
+import Badge from '@material-ui/core/Badge';
+import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
+import MuiTableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { createStyles, Theme, makeStyles, withStyles } from '@material-ui/core/styles';
+import InfoIcon from '@material-ui/icons/Info';
 
 import { useBalance } from '../wallet/use-balance.hooks';
 
@@ -67,11 +70,36 @@ const useStyles = makeStyles((theme: Theme) =>
       left: '4px',
       top: '2px',
       position: 'relative'
-    }
+    },
+    tooltipContentHeader: {
+      fontWeight: 'bold'
+    },
+    tooltipContentRoot: { display: 'flex', flexDirection: 'column' }
   })
 );
 
-export const BalanceComponent = forwardRef((_, ref) => {
+const TableCell = withStyles({
+  root: {
+    borderBottom: 'none',
+    paddingTop: 3,
+    paddingBottom: 3
+  }
+})(MuiTableCell);
+
+const StyledBadge = withStyles((theme: Theme) =>
+  createStyles({
+    badge: {
+      right: -5,
+      top: 0
+    }
+  })
+)(Badge);
+
+interface BalanceProps {
+  forwardedRef: React.ForwardedRef<any>;
+}
+
+const BalanceComponent: React.FC<BalanceProps> = ({ forwardedRef }) => {
   const style = useStyles();
 
   const [session] = useSession();
@@ -82,7 +110,7 @@ export const BalanceComponent = forwardRef((_, ref) => {
     loadInitBalance();
   }, []);
 
-  useImperativeHandle(ref, () => ({
+  useImperativeHandle(forwardedRef, () => ({
     triggerRefresh: () => {
       setIsHidden(false);
       loadInitBalance();
@@ -90,7 +118,7 @@ export const BalanceComponent = forwardRef((_, ref) => {
   }));
 
   const [isHidden, setIsHidden] = useState(true);
-  const handleIsHidden = () => {
+  const handleIsHidden = (e: React.MouseEvent<HTMLButtonElement>) => {
     setIsHidden(!isHidden);
   };
 
@@ -100,10 +128,27 @@ export const BalanceComponent = forwardRef((_, ref) => {
 
   const rows = [createData('MYRIA', freeBalance), createData('ACA', 100)];
 
+  const TooltipContent = () => {
+    return (
+      <div className={style.tooltipContentRoot}>
+        <Typography className={style.tooltipContentHeader}>Myria</Typography>{' '}
+        <Typography>A reward token you earn by sending a tip to a post you think is valuable.</Typography>
+      </div>
+    );
+  };
+
+  const StyledTooltip = () => {
+    return (
+      <Tooltip title={<TooltipContent />} placement="right" aria-label="myria-token-info">
+        <InfoIcon fontSize="small" />
+      </Tooltip>
+    );
+  };
+
   const CurrencyTable = () => {
     return (
-      <TableContainer component={Paper}>
-        <Table aria-label="balance-table">
+      <TableContainer>
+        <Table size="small" aria-label="balance-table">
           <TableHead>
             <TableRow>
               <TableCell>
@@ -118,25 +163,26 @@ export const BalanceComponent = forwardRef((_, ref) => {
             {rows.map(row => (
               <TableRow key={row.currency}>
                 <TableCell component="th" scope="row">
-                  <Typography className={style.balanceText} onClick={handleIsHidden}>
-                    {row.currency}
+                  <Typography className={style.balanceText}>
+                    {row.currency === 'MYRIA' ? (
+                      <>
+                        {' '}
+                        <StyledBadge badgeContent={<StyledTooltip />}>MYRIA</StyledBadge>
+                      </>
+                    ) : (
+                      row.currency
+                    )}
                   </Typography>
                 </TableCell>
                 <TableCell align="right">
                   {isHidden ? (
-                    <Typography className={style.showText} onClick={handleIsHidden}>
-                      Show balance
-                    </Typography>
+                    <Button onClick={handleIsHidden}>Show balance</Button>
                   ) : loading ? (
                     <CircularProgress className={style.spinner} size={20} />
                   ) : error ? (
-                    <Typography className={style.errorText} onClick={handleIsHidden}>
-                      Error, try again!
-                    </Typography>
+                    <Typography className={style.errorText}>Error, try again!</Typography>
                   ) : (
-                    <Typography className={style.balanceText} onClick={handleIsHidden}>
-                      {row.balance}
-                    </Typography>
+                    <Button onClick={handleIsHidden}>{row.balance}</Button>
                   )}
                 </TableCell>
               </TableRow>
@@ -148,8 +194,10 @@ export const BalanceComponent = forwardRef((_, ref) => {
   };
 
   return (
-    <div className={style.root}>
+    <div ref={forwardedRef} className={style.root}>
       <CurrencyTable />
     </div>
   );
-});
+};
+
+export default BalanceComponent;

@@ -53,7 +53,7 @@ export default function CommentComponent({ post, disableReply, hide }: Props) {
   const { state } = useComments();
   const { state: userState } = useUser();
 
-  const { loadInitComment, reply } = useCommentHook(post);
+  const { reply } = useCommentHook(post);
 
   const [session] = useSession();
   const userId = session?.user.id as string;
@@ -62,8 +62,11 @@ export default function CommentComponent({ post, disableReply, hide }: Props) {
   const [selectedTab, setSelectedTab] = React.useState(0);
 
   useEffect(() => {
-    loadInitComment();
-  }, []);
+    //TODO: fix below and destructure loadInitComment in useCommentHook
+    //if (post.publicMetric?.comment > 0) {
+    //loadInitComment();
+    //}
+  }, [post]);
 
   const tipPostUser = () => {
     childRef.current.triggerSendTipModal();

@@ -27,7 +27,6 @@ export const useTransaction = (userId: string) => {
     setLoading(true);
 
     try {
-      console.log('fetching transactions');
       const { data } = await axios.request<Transaction[]>({
         url: '/transactions',
         method: 'GET',
